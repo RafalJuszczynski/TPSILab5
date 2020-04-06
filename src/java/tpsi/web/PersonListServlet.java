@@ -24,6 +24,18 @@ public class PersonListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        
+        HttpSession session = request.getSession();
+        List <Student> lista;
+        if(session.getAttribute("lista_studentow")==null){
+            lista = new ArrayList<>();
+            session.setAttribute("lista_studentow", lista);
+        }else{
+            lista = (List<Student>) session.getAttribute("lista_studentow");
+            session.setAttribute("lista_studentow", lista);
+        }
+        request.getRequestDispatcher("personList.jsp").forward(request, response);
+        
     }
 
 
@@ -34,20 +46,31 @@ public class PersonListServlet extends HttpServlet {
         processRequest(request, response);
         
         HttpSession session = request.getSession();
-        List<Student> lista = (List<Student>) session.getAttribute("lista");
-        if(lista==null){
-            session.setAttribute("lista", lista);
+        List <Student> lista;
+        if(session.getAttribute("lista_studentow")==null){
+            lista = new ArrayList<>();
+            session.setAttribute("lista_studentow", lista);
+        }else{
+            lista = (List<Student>) session.getAttribute("lista_studentow");
+            session.setAttribute("lista_studentow", lista);
         }
+
+        String imie = request.getParameter("imie");
+        String nazwisko = request.getParameter("nazwisko");
+        String email = request.getParameter("email");
         
         Student student = new Student(
-            request.getParameter("imie"),
-            request.getParameter("nazwisko"),
-            request.getParameter("email")
+            imie,
+            nazwisko,
+            email
         );
         
-        lista.add(student);
-        session.setAttribute("lista", lista);
+        if(imie.length()!=0 && nazwisko.length()!=0 && email.length()!=0){
+            lista.add(student);
+        }
+        session.setAttribute("lista_studentow", lista);
         request.getRequestDispatcher("personList.jsp").forward(request, response);
+
     }
 
     @Override
